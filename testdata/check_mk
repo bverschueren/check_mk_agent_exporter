@@ -1,0 +1,9 @@
+<<<check_mk>>>
+Version: 1.5.0p21
+AgentOS: linux
+Hostname: localhost.localdomain
+AgentDirectory: /etc/check_mk
+DataDirectory: /var/lib/check_mk_agent
+SpoolDirectory: /var/lib/check_mk_agent/spool
+PluginsDirectory: /usr/lib/check_mk_agent/plugins
+LocalDirectory: /usr/lib/check_mk_agent/local

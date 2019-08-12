@@ -1,0 +1,43 @@
+<<<check_mk>>>
+Version: 1.5.0p21
+AgentOS: linux
+Hostname: localhost.localdomain
+AgentDirectory: /etc/check_mk
+DataDirectory: /var/lib/check_mk_agent
+SpoolDirectory: /var/lib/check_mk_agent/spool
+PluginsDirectory: /usr/lib/check_mk_agent/plugins
+LocalDirectory: /usr/lib/check_mk_agent/local
+<<<df>>>
+/dev/mapper/VolGroup00-LogVol00 xfs         39269648 1858120  37411528       5% /
+devtmpfs                        devtmpfs      239968       0    239968       0% /dev
+tmpfs                           tmpfs         249712       0    249712       0% /dev/shm
+tmpfs                           tmpfs         249712    4604    245108       2% /run
+tmpfs                           tmpfs         249712       0    249712       0% /sys/fs/cgroup
+/dev/sda2                       xfs          1038336   64076    974260       7% /boot
+/dev/sda2                       xfs          1038336   64076    974260       7% /boot
+tmpfs                           tmpfs          49944       0     49944       0% /run/user/1000
+<<<df>>>
+[df_inodes_start]
+/dev/mapper/VolGroup00-LogVol00 xfs      19644416 62074 19582342    1% /
+devtmpfs                        devtmpfs    59992   333    59659    1% /dev
+tmpfs                           tmpfs       62428     1    62427    1% /dev/shm
+tmpfs                           tmpfs       62428   432    61996    1% /run
+tmpfs                           tmpfs       62428    16    62412    1% /sys/fs/cgroup
+/dev/sda2                       xfs        524288   290   523998    1% /boot
+tmpfs                           tmpfs       62428     1    62427    1% /run/user/1000
+[df_inodes_end]
+<<<nfsmounts>>>
+<<<cifsmounts>>>
+<<<mounts>>>
+/dev/mapper/VolGroup00-LogVol00 / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+/dev/sda2 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+/dev/sda2 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+<<<diskstat>>>
+1565610130
+   8       0 sda 11080 56 1231580 23170 34773 37220 2827803 754398 0 23944 776976
+   8       1 sda1 22 0 176 10 0 0 0 0 0 10 10
+   8       2 sda2 305 0 10750 100 22 0 4136 123 0 113 223
+   8       3 sda3 10723 56 1218558 23032 26963 37220 2823667 749479 0 20601 771919
+ 253       0 dm-0 10481 0 1210870 22952 68121 0 2820779 2685753 0 23693 2708702
+ 253       1 dm-1 157 0 4960 125 361 0 2888 1508 0 268 1633
+[dmsetup_info]

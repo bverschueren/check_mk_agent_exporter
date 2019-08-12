@@ -1,0 +1,4 @@
+<<<mounts>>>
+/dev/mapper/VolGroup00-LogVol00 / xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+/dev/sda2 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0
+/dev/sda2 /boot xfs rw,seclabel,relatime,attr2,inode64,noquota 0 0

@@ -1,0 +1,5 @@
+targets:
+  target_1:
+    HostName: target_1
+    User: user
+    IdentityFile: /app/.ssh/id_rsa

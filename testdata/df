@@ -1,0 +1,9 @@
+<<<df>>>
+/dev/mapper/VolGroup00-LogVol00 xfs         39269648 1858120  37411528       5% /
+devtmpfs                        devtmpfs      239968       0    239968       0% /dev
+tmpfs                           tmpfs         249712       0    249712       0% /dev/shm
+tmpfs                           tmpfs         249712    4604    245108       2% /run
+tmpfs                           tmpfs         249712       0    249712       0% /sys/fs/cgroup
+/dev/sda2                       xfs          1038336   64076    974260       7% /boot
+/dev/sda2                       xfs          1038336   64076    974260       7% /boot
+tmpfs                           tmpfs          49944       0     49944       0% /run/user/1000

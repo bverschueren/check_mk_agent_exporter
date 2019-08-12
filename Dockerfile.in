@@ -1,6 +1,0 @@
-FROM        centos:7
-
-COPY bin/{OS}_{ARCH}/check_mk_exporter  /bin/check_mk_exporter
-
-EXPOSE      2112
-ENTRYPOINT  [ "/bin/check_mk_exporter" ]
