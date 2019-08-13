@@ -2,6 +2,8 @@ package collector
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
+	log "github.com/sirupsen/logrus"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -89,8 +91,12 @@ func (d dfCollector) Update(unparsedStats *[]string, ch chan<- prometheus.Metric
 func (c dfCollector) parseStats(unparsedStats *[]string) []filesystemStats {
 
 	stats := []filesystemStats{}
-
 	for _, stat := range *unparsedStats {
+		log.Tracef("[raw-structured] %s", stat)
+		if match, _ := regexp.MatchString("^\\[([a-z0-9_-]+)\\]", stat); match {
+			log.Debugf("Skipping '%s'", stat)
+			continue
+		}
 		fields := strings.Fields(stat)
 		f_size, _ := strconv.ParseFloat(fields[2], 64)
 		f_used, _ := strconv.ParseFloat(fields[3], 64)

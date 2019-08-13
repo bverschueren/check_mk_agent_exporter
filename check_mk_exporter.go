@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	targets    = make(map[string]config.Target)
-	cfg        = config.Config{
+	targets = make(map[string]config.Target)
+	cfg     = config.Config{
 		Filename: kingpin.Flag(
 			"config.file",
 			"Config file to use",
@@ -78,9 +78,11 @@ func init() {
 	case "debug":
 		log.SetLevel(log.DebugLevel)
 		log.Info("Enabling Debug mode.")
+		log.SetReportCaller(true)
 	case "trace":
 		log.SetLevel(log.TraceLevel)
 		log.Info("Enabling Trace mode.")
+		log.SetReportCaller(true)
 	}
 }
 

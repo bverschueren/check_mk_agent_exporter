@@ -118,28 +118,52 @@ func (mc CheckMKCollector) collectRawStats() (*bytes.Buffer, error) {
 }
 
 // TODO: allow overriding subsystems
-func (mc CheckMKCollector) structureRawStats(raw *bytes.Buffer) *map[string]*[]string {
+func structureRawStats(raw *bytes.Buffer) *map[string]*[]string {
 	scanner := bufio.NewScanner(strings.NewReader(raw.String()))
 	log.Trace("Raw stats: ", raw.String())
 
 	re := regexp.MustCompile("<<<([\\w_]+)>>>")
 	structuredStats := make(map[string]*[]string)
+	// list stats in temporary map to ensure unique elemets
+	tempStats := make(map[string]struct{})
+	curStat, prevStat := "", ""
 
-	curStat := "unknown"
+	keyMapToList := func() *[]string {
+		// convert map to slice of keys
+		keys := new([]string)
+		log.Tracef("Found for %s:", curStat)
+		for k, _ := range tempStats {
+			log.Trace(k)
+			*keys = append(*keys, k)
+		}
+		return keys
+	}
+
 	for scanner.Scan() {
-		in := scanner.Text()
+
 		// TODO: filter only configured subsystems
+		in := scanner.Text()
+
 		if match := re.FindStringSubmatch(in); match != nil {
-			log.Debugf("Parsing subsystem: %s", match[1])
+			prevStat = curStat
 			curStat = match[1]
-			if _, exists := structuredStats[curStat]; !exists {
-				structuredStats[curStat] = new([]string)
+			log.Debugf("Found stat %s", curStat)
+			if prevStat == "" {
+				prevStat = curStat
+			}
+			if prevStat != curStat {
+				// move the stat from previous iteration to list
+				structuredStats[prevStat] = keyMapToList()
+				log.Debugf("structured %s", prevStat)
+				tempStats = make(map[string]struct{})
 			}
 		} else {
-			log.Tracef("Parsing %s", in)
-			*structuredStats[curStat] = append(*structuredStats[curStat], in)
+			tempStats[in] = struct{}{}
 		}
 	}
+	// process stat from the last iteration
+	structuredStats[curStat] = keyMapToList()
+
 	return &structuredStats
 }
 
@@ -147,7 +171,7 @@ func (mc CheckMKCollector) Collect(ch chan<- prometheus.Metric) {
 	wg := sync.WaitGroup{}
 	wg.Add(len(mc.collectors))
 	if rawStats, err := mc.collectRawStats(); err == nil {
-		structuredRawStats := mc.structureRawStats(rawStats)
+		structuredRawStats := structureRawStats(rawStats)
 		for name, c := range mc.collectors {
 			log.Debugf("Collecting from '%s'", name)
 			if _, ok := (*structuredRawStats)[name]; !ok {
