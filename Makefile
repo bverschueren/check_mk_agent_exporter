@@ -40,6 +40,7 @@ container-test: container-image
 
 dev-environment:
 	mkdir -p ./docker/ssh/{client,server}
+	chmod 700 ./docker/ssh/{client,server}
 	yes y|ssh-keygen -t rsa -b 2038 -f ./docker/ssh/client/id_rsa -C dev-key -N ""
 	cp ./docker/ssh/client/id_rsa.pub ./docker/ssh/server/authorized_keys
 

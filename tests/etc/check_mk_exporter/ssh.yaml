@@ -1,9 +1,0 @@
-targets:
-  target_1:
-    HostName: target_1
-    User: app
-    IdentityFile: /app/.ssh/id_rsa
-  target_2:
-    HostName: target_2
-    User: app
-    IdentityFile: /app/.ssh/id_rsa
