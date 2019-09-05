@@ -27,7 +27,7 @@ var (
 	).Default("2112").Int()
 )
 
-func checkMkHandler(w http.ResponseWriter, r *http.Request) {
+func CheckMkHandler(w http.ResponseWriter, r *http.Request) {
 	targetHost := r.URL.Query().Get("target")
 	if targetHost == "" {
 		http.Error(w, "'target' parameter must be specified", 400)
@@ -91,7 +91,7 @@ func main() {
 
 	cfg.ReadFile(&targets)
 	http.Handle("/metrics", prometheus.Handler())
-	http.HandleFunc("/check_mk", checkMkHandler)
+	http.HandleFunc("/check_mk", CheckMkHandler)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`<html>
              <head><title>Check_MK Exporter</title></head>
