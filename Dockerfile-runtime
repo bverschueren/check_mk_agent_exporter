@@ -1,0 +1,5 @@
+FROM scratch
+
+COPY ./bin/check_mk_exporter /check_mk_exporter
+
+ENTRYPOINT ["/check_mk_exporter"]

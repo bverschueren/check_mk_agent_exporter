@@ -3,38 +3,32 @@ BINARY = check_mk_exporter
 
 VERSION = $(shell git describe --tags --always --dirty)
 OS := $(if $(GOOS),$(GOOS),$(shell go env GOOS))
-ARCH := $(if $(GOARCH),$(GOARCH),$(shell go env GOARCH))
 TAG = $(VERSION)_$(OS)_$(ARCH)
 UID := $(shell id -u)
 GID := $(shell id -g)
 
-BUILD_DIRS := bin bin/$(OS)_$(ARCH)
+BUILD_DIRS := bin
 REGISTRY_PREFIX ?= bverschueren
 
-container-build: bin/$(OS)_$(ARCH)/$(BINARY)
-bin/$(OS)_$(ARCH)/$(BINARY): $(BUILD_DIRS)
-	@docker run			\
-	--rm				\
-	-v $$(pwd):/src			\
-	-w /src				\
-	-v $(pwd)/build:/go/bin/	\
-	$(BUILD_IMAGE)			\
-	go build -o bin/$(OS)_$(ARCH)/$(BINARY) .
+builder-image:
+	docker build -t $(BINARY)-builder .
 
-container-image: container-build
-	@docker build -t $(REGISTRY_PREFIX)/$(BINARY):$(TAG) \
-		--build-arg=OS=$(OS) \
-		--build-arg=ARCH=$(ARCH) \
-		--build-arg=UID=$(UID) \
-		--build-arg=GID=$(GID) \
-		.
+container-image: $(BUILD_DIRS) builder-image
+	@s2i build . $(BINARY)-builder $(BINARY)-intermediate
+
+container-image-slim: binary
+	@docker build -f Dockerfile-runtime -t $(REGISTRY_PREFIX)/$(BINARY):$(TAG) .
 
 container-clean:
-	@docker rmi $(REGISTRY_PREFIX)/$(BINARY):$(TAG)
+	@docker rmi -f $(REGISTRY_PREFIX)/$(BINARY):$(TAG)
+	@docker rmi -f $(BINARY)-intermediate
+	@docker rmi -f $(BINARY)-builder
 
 container-test: container-image
-	$(eval FAKE := $(shell mktemp))
-	$(eval CONTAINER_ID := $(shell docker run -d -p2112:2112 -v $(FAKE):/etc/check_mk_exporter/ssh.yaml $(REGISTRY_PREFIX)/$(BINARY):$(TAG)))
+	$(eval FAKE := $(shell mktemp -d))
+	$(shell touch $(FAKE)/ssh.yaml)
+	$(shell chmod -R 755 $(FAKE))
+	$(eval CONTAINER_ID := $(shell docker run -d -p2112:2112 -v $(FAKE):/etc/check_mk_exporter/ $(BINARY)-intermediate))
 	@curl localhost:2112
 	@docker stop $(CONTAINER_ID)
 
@@ -44,12 +38,14 @@ dev-environment:
 	yes y|ssh-keygen -t rsa -b 2038 -f ./docker/ssh/client/id_rsa -C dev-key -N ""
 	cp ./docker/ssh/client/id_rsa.pub ./docker/ssh/server/authorized_keys
 
-clean-dev-environment:
+dev-environment-clean:
 	rm -rf ./docker/ssh/*/*
-	@docker image ls|grep check_mk_exporter|awk '{print $$3}'|xargs -r docker image rm --force
+	@docker-compose down
 
-build: $(BUILD_DIRS)
-	go build -v -o bin/$(OS)_$(ARCH)/$(BINARY) .
+bin/$(BINARY): $(BUILD_DIRS) container-image
+	@docker run $(BINARY)-intermediate /usr/libexec/s2i/save-artifacts | tar -xvf - -C bin/
+
+binary: bin/$(BINARY)
 
 clean:
 	rm -rf bin/

@@ -1,0 +1,4 @@
+#!/bin/bash -e
+cp -Rf /tmp/src/. ./
+go get -v
+go build -v -o check_mk_exporter -a -installsuffix cgo .

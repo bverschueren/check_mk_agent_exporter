@@ -1,23 +1,20 @@
-FROM centos:7
+FROM golang:1.12
 
-ARG PORT=2112
-ARG OS=linux
-ARG ARCH=amd64
-ARG UID=1000
-ARG GID=1000
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOCACHE=/tmp \
+    STI_SCRIPTS_PATH=/usr/libexec/s2i
 
-RUN mkdir /app && \
-    chown -R ${UID}:${GID} /app && \
-    groupadd --gid ${GID} app && \
-    useradd --no-create-home --uid ${UID} --gid ${GID} --home-dir /app app
+LABEL io.openshift.s2i.scripts-url=image://${STI_SCRIPTS_PATH}
 
+COPY ./s2i/bin/ ${STI_SCRIPTS_PATH}
 
-COPY bin/${OS}_${ARCH}/check_mk_exporter  /bin/check_mk_exporter
+RUN mkdir /build \
+    && chmod 0777 /build
 
-USER ${UID}
-VOLUME /app/.ssh/
-WORKDIR /app
+WORKDIR /build
 
-EXPOSE $PORT
+USER 1001
 
-CMD  [ "/bin/check_mk_exporter" ]
+CMD ["/usr/libexec/s2i/usage"]

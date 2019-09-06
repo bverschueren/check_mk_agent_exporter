@@ -1,14 +1,14 @@
 version: '3'
 services:
   check_mk_exporter:
-    build: .
+    image: check_mk_exporter-intermediate
     ports:
       - "2112:2112"
     volumes:
       - "./docker/etc/check_mk_exporter/:/etc/check_mk_exporter/"
       - "./docker/ssh/client/:/app/.ssh/"
     command:
-      - "/bin/check_mk_exporter"
+      - "/build/check_mk_exporter"
       - "--log.level=trace"
   target_1:
     image: fedora/ssh

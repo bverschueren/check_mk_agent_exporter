@@ -1,0 +1,2 @@
+#!/bin/sh -e
+tar cf - check_mk_exporter
